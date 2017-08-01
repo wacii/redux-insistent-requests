@@ -1,0 +1,9 @@
+{
+  "name": "redux-insistent-requests",
+  "version": "0.0.0",
+  "description": "Serializable requests with retries",
+  "main": "lib/index.js",
+  "repository": "https://github.com/wacii/redux-insistent-requests",
+  "author": "wacii",
+  "license": "MIT"
+}
