@@ -1,9 +1,10 @@
 import { DEQUEUE, SCHEDULE_RETRY } from "./constants";
+import { queueSelector } from "./selectors";
 
 function buildMiddleware(send) {
   return ({ dispatch, getState }) => next => action => {
     if (action.meta && action.meta.request) {
-      const { queue } = getState().insistentRequests;
+      const queue = queueSelector(getState());
       if (queue.length === 0) {
         send(dispatch, action.meta.request);
       }
@@ -12,14 +13,14 @@ function buildMiddleware(send) {
     let queue;
     switch (action.type) {
       case DEQUEUE:
-        queue = getState().insistentRequests.queue;
+        queue = queueSelector(getState());
         if (queue.length !== 0) {
           const data = queue[0];
           send(dispatch, data);
         }
         break;
       case SCHEDULE_RETRY:
-        queue = getState().insistentRequests.queue;
+        queue = queueSelector(getState());
         if (queue.length !== 0) {
           const data = queue[0];
           setTimeout(() => send(dispatch, data), 500);
