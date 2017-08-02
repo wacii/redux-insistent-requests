@@ -1,8 +1,9 @@
-import { DEQUEUE } from "./constants";
+import { DEQUEUE, ONLINE, OFFLINE, } from "./constants";
 
 const initialState = {
   queue: [],
   nextId: 0,
+  online: true,
 };
 
 function reducer(state = initialState, action) {
@@ -14,13 +15,26 @@ function reducer(state = initialState, action) {
       queue: state.queue.concat(item),
     };
   }
-  if (action.type === DEQUEUE) {
-    return {
-      ...state,
-      queue: state.queue.slice(1),
-    };
+
+  switch(action.type) {
+    case DEQUEUE:
+      return {
+        ...state,
+        queue: state.queue.slice(1),
+      };
+    case ONLINE:
+      return {
+        ...state,
+        online: true,
+      };
+    case OFFLINE:
+      return {
+        ...state,
+        online: false,
+      };
+    default:
+      return state;
   }
-  return state;
 }
 
 export default reducer;

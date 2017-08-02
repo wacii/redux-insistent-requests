@@ -1,6 +1,10 @@
 import buildMiddleware from "../src/middleware";
-import { dequeue } from "../src/actions";
-import { actionWithRequest, buildStateWithRequests } from "./test-helpers";
+import { dequeue, online } from "../src/actions";
+import {
+  actionWithRequest,
+  buildOfflineState,
+  buildStateWithRequests,
+} from "./test-helpers";
 
 test("send request from metadata when queue empty", () => {
   const { dispatch, invoke, send } = setup(buildStateWithRequests());
@@ -14,6 +18,18 @@ test("send next request on dequeue", () => {
   invoke(dequeue());
   expect(send).toBeCalled();
 });
+
+test("send next request on online", () => {
+  const { invoke, send } = setup(buildStateWithRequests(2));
+  invoke(online());
+  expect(send).toBeCalled();
+});
+
+test("send requests only if online", () => {
+  const { invoke, send } = setup(buildOfflineState());
+  invoke(actionWithRequest());
+  expect(send).not.toBeCalled();
+})
 
 function setup(state) {
   const getState = jest.fn(() => state);
