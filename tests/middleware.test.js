@@ -1,5 +1,6 @@
 import buildMiddleware from "../src/middleware";
 import { dequeue, online } from "../src/actions";
+import { INITIALIZE } from "../src/constants";
 import {
   actionWithRequest,
   buildOfflineState,
@@ -22,6 +23,12 @@ test("send next request on dequeue", () => {
 test("send next request on online", () => {
   const { invoke, send } = setup(buildStateWithRequests(2));
   invoke(online());
+  expect(send).toBeCalled();
+});
+
+test("send next request on online", () => {
+  const { invoke, send } = setup(buildStateWithRequests(2));
+  invoke({ type: INITIALIZE });
   expect(send).toBeCalled();
 });
 

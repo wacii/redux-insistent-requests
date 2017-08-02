@@ -1,4 +1,4 @@
-import { DEQUEUE, SCHEDULE_RETRY, ONLINE } from "./constants";
+import { DEQUEUE, SCHEDULE_RETRY, ONLINE, INITIALIZE } from "./constants";
 import { queueSelector, onlineSelector } from "./selectors";
 
 function buildMiddleware(send) {
@@ -14,6 +14,7 @@ function buildMiddleware(send) {
     const result = next(action);
     let queue, state, online;
     switch (action.type) {
+      case INITIALIZE:
       case ONLINE:
       case DEQUEUE:
         state = getState();

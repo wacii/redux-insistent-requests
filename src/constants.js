@@ -5,3 +5,5 @@ export const SCHEDULE_RETRY = `${prefix}SCHEDULE_RETRY`;
 
 export const ONLINE = `${prefix}ONLINE`;
 export const OFFLINE = `${prefix}OFFLINE`;
+
+export const INITIALIZE = "persist/REHYDRATE";
