@@ -26,7 +26,7 @@ export function actionWithRequest(request) {
   return {
     type: "SOME_ACTION",
     meta: {
-      request: request || dummyRequest(),
-    },
+      request: request || dummyRequest()
+    }
   };
 }

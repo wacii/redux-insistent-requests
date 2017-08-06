@@ -1,13 +1,14 @@
+/* global fetch */
 import { SUCCESS, CLIENT_ERROR, NETWORK_ERROR } from "./constants";
 
 function request(config) {
-  const { url, ...options } = config
+  const { url, ...options } = config;
   fetch(url, options).then(response => {
-    if (promise.ok) {
+    if (response.ok) {
       return extractBody(response).then(body => [SUCCESS, body]);
     }
 
-    if (400 <= promise.status && promise.status < 500) {
+    if (400 <= response.status && response.status < 500) {
       return extractBody(response).then(body => [CLIENT_ERROR, body]);
     }
 

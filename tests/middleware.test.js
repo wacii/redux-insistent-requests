@@ -4,7 +4,7 @@ import { INITIALIZE } from "../src/constants";
 import {
   actionWithRequest,
   buildOfflineState,
-  buildStateWithRequests,
+  buildStateWithRequests
 } from "./test-helpers";
 
 test("send request from metadata when queue empty", () => {
@@ -36,7 +36,7 @@ test("send requests only if online", () => {
   const { invoke, send } = setup(buildOfflineState());
   invoke(actionWithRequest());
   expect(send).not.toBeCalled();
-})
+});
 
 function setup(state) {
   const getState = jest.fn(() => state);
@@ -50,6 +50,6 @@ function setup(state) {
     getState,
     dispatch,
     send,
-    next,
+    next
   };
 }

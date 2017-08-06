@@ -5,7 +5,9 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "format": "prettier --write \"{src,tests}/**/*.js\""
   },
   "repository": "https://github.com/wacii/redux-insistent-requests",
   "author": "wacii",
@@ -15,7 +17,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "eslint": "^4.3.0",
+    "eslint-config-prettier": "^2.3.0",
     "jest": "^20.0.4",
+    "prettier": "^1.5.3",
     "redux": "^3.7.2"
-  }
+  },
+  "dependencies": {}
 }

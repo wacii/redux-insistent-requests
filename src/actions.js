@@ -1,7 +1,7 @@
-import { DEQUEUE, SCHEDULE_RETRY, ONLINE, OFFLINE, } from "./constants";
+import { DEQUEUE, SCHEDULE_RETRY, ONLINE, OFFLINE } from "./constants";
 
 export function dequeue() {
-  return { type: DEQUEUE, };
+  return { type: DEQUEUE };
 }
 
 export function scheduleRetry() {

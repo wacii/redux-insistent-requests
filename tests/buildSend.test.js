@@ -3,8 +3,8 @@ import { dequeue, scheduleRetry } from "../src/actions";
 import { SUCCESS, CLIENT_ERROR, NETWORK_ERROR } from "../src/request/constants";
 
 test("dispatch `DEQUEUE` and user provided action on success", () => {
-  const { send, dispatch, data, body, } = setup(SUCCESS);
-  expect.assertions(2)
+  const { send, dispatch, data, body } = setup(SUCCESS);
+  expect.assertions(2);
   send(dispatch, data).then(() => {
     expect(dispatch).toBeCalledWith(dequeue());
     expect(dispatch).toBeCalledWith({ ...data.success, payload: body });
@@ -41,7 +41,7 @@ function setup(outcome) {
   const data = {
     config: null,
     success: { type: "USER_PROVIDED_SUCCESS" },
-    failure: { type: "USER_PROVIDED_FAILURE" },
+    failure: { type: "USER_PROVIDED_FAILURE" }
   };
   const dispatch = jest.fn();
 
@@ -49,6 +49,6 @@ function setup(outcome) {
     body,
     send,
     data,
-    dispatch,
+    dispatch
   };
 }

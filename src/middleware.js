@@ -35,7 +35,7 @@ function buildMiddleware(send) {
         break;
     }
     return result;
-  }
+  };
 }
 
 export default buildMiddleware;

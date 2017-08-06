@@ -8,7 +8,7 @@ test("enqueue request from metadata with unique id", () => {
   state = reducer(state, actionWithRequest(requests[1]));
   expect(state.queue).toEqual([
     expect.objectContaining(requests[0]),
-    expect.objectContaining(requests[1]),
+    expect.objectContaining(requests[1])
   ]);
   expect(state.queue[0].id).not.toEqual(state.queue[1].id);
 });
