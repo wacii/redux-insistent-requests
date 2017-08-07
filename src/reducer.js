@@ -1,9 +1,17 @@
-import { DEQUEUE, ONLINE, OFFLINE } from "./constants";
+import {
+  DEQUEUE,
+  ONLINE,
+  OFFLINE,
+  RETRY,
+  SCHEDULE_RETRY,
+  INITIALIZE
+} from "./constants";
 
 const initialState = {
   queue: [],
   nextId: 0,
-  online: true
+  online: true,
+  waiting: false
 };
 
 function reducer(state = initialState, action) {
@@ -12,7 +20,8 @@ function reducer(state = initialState, action) {
     return {
       ...state,
       nextId: state.nextId + 1,
-      queue: state.queue.concat(item)
+      queue: state.queue.concat(item),
+      waiting: true
     };
   }
 
@@ -20,7 +29,18 @@ function reducer(state = initialState, action) {
     case DEQUEUE:
       return {
         ...state,
-        queue: state.queue.slice(1)
+        queue: state.queue.slice(1),
+        waiting: false
+      };
+    case SCHEDULE_RETRY:
+      return {
+        ...state,
+        waiting: true
+      };
+    case RETRY:
+      return {
+        ...state,
+        waiting: false
       };
     case ONLINE:
       return {
@@ -31,6 +51,11 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         online: false
+      };
+    case INITIALIZE:
+      return {
+        ...state,
+        waiting: false
       };
     default:
       return state;

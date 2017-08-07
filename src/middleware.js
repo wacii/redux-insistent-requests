@@ -1,5 +1,12 @@
-import { DEQUEUE, SCHEDULE_RETRY, ONLINE, INITIALIZE } from "./constants";
-import { queueSelector, onlineSelector } from "./selectors";
+import { retry } from "./actions";
+import {
+  DEQUEUE,
+  SCHEDULE_RETRY,
+  ONLINE,
+  INITIALIZE,
+  RETRY
+} from "./constants";
+import { queueSelector, onlineSelector, waitingSelector } from "./selectors";
 
 function buildMiddleware(send) {
   return ({ dispatch, getState }) => next => action => {
@@ -12,26 +19,25 @@ function buildMiddleware(send) {
       }
     }
     const result = next(action);
-    let queue, state, online;
+    let queue, state, online, waiting;
+    // TODO: do you need to respond to both INITIALIZE and ONLINE?
     switch (action.type) {
       case INITIALIZE:
       case ONLINE:
       case DEQUEUE:
+      case RETRY:
         state = getState();
         queue = queueSelector(state);
         online = onlineSelector(state);
-        if (queue.length !== 0 && online) {
+        waiting = waitingSelector(state);
+        if (queue.length !== 0 && online && !waiting) {
           const data = queue[0];
           send(dispatch, data);
         }
         break;
       case SCHEDULE_RETRY:
-        state = getState();
-        queue = queueSelector(state);
-        if (queue.length !== 0 && online) {
-          const data = queue[0];
-          setTimeout(() => send(dispatch, data), 500);
-        }
+        // TODO: more meaningful backoff calculation
+        setTimeout(() => dispatch(retry()), 500);
         break;
     }
     return result;
