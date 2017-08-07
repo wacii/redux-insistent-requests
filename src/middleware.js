@@ -6,7 +6,12 @@ import {
   INITIALIZE,
   RETRY
 } from "./constants";
-import { queueSelector, onlineSelector, waitingSelector } from "./selectors";
+import {
+  attemptsSelector,
+  queueSelector,
+  onlineSelector,
+  waitingSelector
+} from "./selectors";
 
 function buildMiddleware(send) {
   return ({ dispatch, getState }) => next => action => {
@@ -19,7 +24,7 @@ function buildMiddleware(send) {
       }
     }
     const result = next(action);
-    let queue, state, online, waiting;
+    let queue, state, online, waiting, attempts, backoffTime;
     // TODO: do you need to respond to both INITIALIZE and ONLINE?
     switch (action.type) {
       case INITIALIZE:
@@ -36,12 +41,18 @@ function buildMiddleware(send) {
         }
         break;
       case SCHEDULE_RETRY:
-        // TODO: more meaningful backoff calculation
-        setTimeout(() => dispatch(retry()), 500);
+        state = getState();
+        attempts = attemptsSelector(state);
+        backoffTime = calculateBackoff(attempts);
+        setTimeout(() => dispatch(retry()), backoffTime);
         break;
     }
     return result;
   };
+}
+
+function calculateBackoff(attempts) {
+  return Math.pow(2, attempts) * 100;
 }
 
 export default buildMiddleware;

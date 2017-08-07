@@ -1,5 +1,9 @@
 const reducerKey = "insistentRequests";
 
+export function attemptsSelector(state) {
+  return state[reducerKey].attempts;
+}
+
 export function queueSelector(state) {
   return state[reducerKey].queue;
 }
