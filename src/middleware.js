@@ -1,4 +1,5 @@
 import { retry } from "./actions";
+import calculateBackoff from "./calculateBackoff";
 import {
   DEQUEUE,
   SCHEDULE_RETRY,
@@ -49,10 +50,6 @@ function buildMiddleware(send) {
     }
     return result;
   };
-}
-
-function calculateBackoff(attempts) {
-  return Math.pow(2, attempts) * 100;
 }
 
 export default buildMiddleware;
