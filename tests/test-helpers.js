@@ -16,8 +16,9 @@ export function buildOfflineState() {
   return { insistentRequests: state };
 }
 
-export function buildWaitingState() {
+export function buildBusyState() {
   let state = reducer(undefined, { type: "" });
+  state = reducer(state, actionWithRequest());
   state = reducer(state, scheduleRetry());
   return { insistentRequests: state };
 }

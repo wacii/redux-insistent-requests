@@ -10,7 +10,7 @@ import {
   actionWithRequest,
   buildOfflineState,
   buildStateWithRequests,
-  buildWaitingState
+  buildBusyState
 } from "./test-helpers";
 
 test("send request from metadata when queue empty", () => {
@@ -32,6 +32,12 @@ test("send next request on online", () => {
   expect(send).toBeCalled();
 });
 
+test("do not send next request on online if busy", () => {
+  let { invoke, send } = setup(buildBusyState());
+  invoke(online());
+  expect(send).not.toBeCalled();
+});
+
 test("send next request on initialize", () => {
   const { invoke, send } = setup(buildStateWithRequests(2));
   invoke(initialize());
@@ -47,12 +53,6 @@ test("send next request on retry", () => {
 test("send requests only if online", () => {
   const { invoke, send } = setup(buildOfflineState());
   invoke(actionWithRequest());
-  expect(send).not.toBeCalled();
-});
-
-test("send requests only if not waiting", () => {
-  let { invoke, send } = setup(buildWaitingState());
-  invoke(dequeue());
   expect(send).not.toBeCalled();
 });
 
