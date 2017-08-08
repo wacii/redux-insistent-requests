@@ -12,6 +12,6 @@ export function onlineSelector(state) {
   return state[reducerKey].online;
 }
 
-export function waitingSelector(state) {
-  return state[reducerKey].waiting;
+export function busySelector(state) {
+  return state[reducerKey].busy;
 }

@@ -11,7 +11,7 @@ const initialState = {
   queue: [],
   nextId: 0,
   online: true,
-  waiting: false,
+  busy: false,
   attempts: 0
 };
 
@@ -22,7 +22,7 @@ function reducer(state = initialState, action) {
       ...state,
       nextId: state.nextId + 1,
       queue: state.queue.concat(item),
-      waiting: true
+      busy: true
     };
   }
 
@@ -31,18 +31,18 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         queue: state.queue.slice(1),
-        waiting: false,
+        busy: false,
         attempts: 0
       };
     case SCHEDULE_RETRY:
       return {
         ...state,
-        waiting: true
+        busy: true
       };
     case RETRY:
       return {
         ...state,
-        waiting: false,
+        busy: false,
         attempts: state.attempts + 1
       };
     case ONLINE:
@@ -58,7 +58,7 @@ function reducer(state = initialState, action) {
     case INITIALIZE:
       return {
         ...state,
-        waiting: false
+        busy: false
       };
     default:
       return state;

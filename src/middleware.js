@@ -11,7 +11,7 @@ import {
   attemptsSelector,
   queueSelector,
   onlineSelector,
-  waitingSelector
+  busySelector
 } from "./selectors";
 
 function buildMiddleware(send) {
@@ -25,7 +25,7 @@ function buildMiddleware(send) {
       }
     }
     const result = next(action);
-    let queue, state, online, waiting, attempts, backoffTime;
+    let queue, state, online, busy, attempts, backoffTime;
     // TODO: do you need to respond to both INITIALIZE and ONLINE?
     switch (action.type) {
       case INITIALIZE:
@@ -35,8 +35,8 @@ function buildMiddleware(send) {
         state = getState();
         queue = queueSelector(state);
         online = onlineSelector(state);
-        waiting = waitingSelector(state);
-        if (queue.length !== 0 && online && !waiting) {
+        busy = busySelector(state);
+        if (queue.length !== 0 && online && !busy) {
           const data = queue[0];
           send(dispatch, data);
         }
