@@ -36,7 +36,8 @@ function buildMiddleware(send) {
         queue = queueSelector(state);
         online = onlineSelector(state);
         busy = busySelector(state);
-        if (queue.length !== 0 && online && !busy) {
+        if (action.type === ONLINE && busy) break;
+        if (queue.length !== 0 && online) {
           const data = queue[0];
           send(dispatch, data);
         }

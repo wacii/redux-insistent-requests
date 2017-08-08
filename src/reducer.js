@@ -42,7 +42,7 @@ function reducer(state = initialState, action) {
     case RETRY:
       return {
         ...state,
-        busy: false,
+        busy: state.online,
         attempts: state.attempts + 1
       };
     case ONLINE:
