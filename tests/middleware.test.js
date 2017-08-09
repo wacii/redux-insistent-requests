@@ -34,6 +34,23 @@ describe("serial", () => {
   });
 });
 
+describe("parallel", () => {
+  test("send request from metadata", () => {
+    const { dispatch, invoke, send } = setup(buildStateWithRequests(1), false);
+    const action = actionWithRequest();
+    invoke(action);
+    expect(send).toBeCalledWith(dispatch, action.meta.request);
+  });
+
+  ["dequeue", "online", "initialize", "retry"].forEach(action => {
+    test(`send all requests on ${action}`, () => {
+      const { invoke, send } = setup(buildStateWithRequests(2), false);
+      invoke(actions[action]());
+      expect(send).toHaveBeenCalledTimes(2);
+    });
+  });
+});
+
 test("send request from metadata only if online", () => {
   const { invoke, send } = setup(buildOfflineState());
   invoke(actionWithRequest());
@@ -64,11 +81,11 @@ test("schedule retry when prompted", () => {
   expect(dispatch).toBeCalledWith(retry());
 });
 
-function setup(state) {
+function setup(state, serial = true) {
   const getState = jest.fn(() => state);
   const dispatch = jest.fn();
   const send = jest.fn();
-  const middleware = buildMiddleware(send);
+  const middleware = buildMiddleware(send, serial);
   const next = jest.fn();
 
   return {

@@ -16,6 +16,7 @@ function buildMiddleware(send, serial = true) {
       const queue = queueSelector(state);
       const online = onlineSelector(state);
       if (!serial || (queue.length === 0 && online)) {
+        // TODO: send request data and id to match new interface
         send(dispatch, action.meta.request);
       }
     }
