@@ -7,17 +7,22 @@ import {
   INITIALIZE,
   RETRY
 } from "./constants";
-import { queueSelector, onlineSelector, requestSelector } from "./selectors";
+import {
+  nextIdSelector,
+  queueSelector,
+  onlineSelector,
+  requestSelector
+} from "./selectors";
 
 function buildMiddleware(send, serial = true) {
   return ({ dispatch, getState }) => next => action => {
     if (action.meta && action.meta.request) {
       const state = getState();
       const queue = queueSelector(state);
+      const id = nextIdSelector(state);
       const online = onlineSelector(state);
       if (!serial || (queue.length === 0 && online)) {
-        // TODO: send request data and id to match new interface
-        send(dispatch, action.meta.request);
+        send(dispatch, { data: action.meta.request, id });
       }
     }
     const result = next(action);

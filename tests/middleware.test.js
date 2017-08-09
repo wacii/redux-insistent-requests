@@ -1,9 +1,6 @@
 import buildMiddleware from "../src/middleware";
 import * as actions from "../src/actions";
-import {
-  retry,
-  scheduleRetry
-} from "../src/actions";
+import { retry, scheduleRetry } from "../src/actions";
 import { queueSelector } from "../src/selectors";
 import {
   actionWithRequest,
@@ -17,8 +14,12 @@ describe("serial", () => {
     let { dispatch, invoke, send } = setup(buildStateWithRequests());
 
     const action = actionWithRequest();
+    const expected = {
+      data: action.meta.request,
+      id: expect.anything()
+    };
     invoke(action);
-    expect(send).toBeCalledWith(dispatch, action.meta.request);
+    expect(send).toBeCalledWith(dispatch, expected);
 
     ({ invoke, send } = setup(buildStateWithRequests(1)));
     invoke(actionWithRequest());
@@ -38,8 +39,12 @@ describe("parallel", () => {
   test("send request from metadata", () => {
     const { dispatch, invoke, send } = setup(buildStateWithRequests(1), false);
     const action = actionWithRequest();
+    const expected = {
+      data: action.meta.request,
+      id: expect.anything()
+    };
     invoke(action);
-    expect(send).toBeCalledWith(dispatch, action.meta.request);
+    expect(send).toBeCalledWith(dispatch, expected);
   });
 
   ["dequeue", "online", "initialize", "retry"].forEach(action => {
