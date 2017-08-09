@@ -1,11 +1,10 @@
 import buildMiddleware from "../src/middleware";
+import * as actions from "../src/actions";
 import {
-  dequeue,
-  online,
   retry,
-  initialize,
   scheduleRetry
 } from "../src/actions";
+import { queueSelector } from "../src/selectors";
 import {
   actionWithRequest,
   buildOfflineState,
@@ -13,47 +12,48 @@ import {
   buildBusyState
 } from "./test-helpers";
 
-test("send request from metadata when queue empty", () => {
-  const { dispatch, invoke, send } = setup(buildStateWithRequests());
-  const action = actionWithRequest();
-  invoke(action);
-  expect(send).toBeCalledWith(dispatch, action.meta.request);
+describe("serial", () => {
+  test("send request from metadata when queue empty", () => {
+    let { dispatch, invoke, send } = setup(buildStateWithRequests());
+
+    const action = actionWithRequest();
+    invoke(action);
+    expect(send).toBeCalledWith(dispatch, action.meta.request);
+
+    ({ invoke, send } = setup(buildStateWithRequests(1)));
+    invoke(actionWithRequest());
+    expect(send).not.toBeCalled();
+  });
+
+  ["dequeue", "online", "initialize", "retry"].forEach(action => {
+    test(`send next request on ${action}`, () => {
+      const { invoke, send } = setup(buildStateWithRequests(2));
+      invoke(actions[action]());
+      expect(send).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
-test("send next request on dequeue", () => {
-  const { invoke, send } = setup(buildStateWithRequests(2));
-  invoke(dequeue());
-  expect(send).toBeCalled();
-});
-
-test("send next request on online", () => {
-  const { invoke, send } = setup(buildStateWithRequests(2));
-  invoke(online());
-  expect(send).toBeCalled();
-});
-
-test("do not send next request on online if busy", () => {
-  let { invoke, send } = setup(buildBusyState());
-  invoke(online());
-  expect(send).not.toBeCalled();
-});
-
-test("send next request on initialize", () => {
-  const { invoke, send } = setup(buildStateWithRequests(2));
-  invoke(initialize());
-  expect(send).toBeCalled();
-});
-
-test("send next request on retry", () => {
-  const { invoke, send } = setup(buildStateWithRequests(2));
-  invoke(retry());
-  expect(send).toBeCalled();
-});
-
-test("send requests only if online", () => {
+test("send request from metadata only if online", () => {
   const { invoke, send } = setup(buildOfflineState());
   invoke(actionWithRequest());
   expect(send).not.toBeCalled();
+});
+
+["dequeue", "online", "initialize", "retry"].forEach(action => {
+  test(`do not send next request on ${action} if busy`, () => {
+    let { invoke, send } = setup(buildBusyState());
+    invoke(actions[action]());
+    expect(send).not.toBeCalled();
+  });
+});
+
+test("send next request if target of retry action", () => {
+  const { invoke, send, getState } = setup(buildStateWithRequests(1));
+  const queue = queueSelector(getState());
+  const request = queue[0];
+  invoke(retry(request.id));
+  expect(send).toBeCalled();
 });
 
 test("schedule retry when prompted", () => {

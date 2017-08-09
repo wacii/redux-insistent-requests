@@ -35,7 +35,7 @@ function buildMiddleware(send, serial = true) {
         if (!online) break;
 
         if (serial) {
-          queue = queue.slice(1);
+          queue = queue.slice(0, 1);
         }
         (action.type === RETRY
           ? queue.filter(request => !request.busy || request.id === id)
