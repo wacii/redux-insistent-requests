@@ -7,25 +7,20 @@ import {
   INITIALIZE,
   RETRY
 } from "./constants";
-import {
-  attemptsSelector,
-  queueSelector,
-  onlineSelector,
-  busySelector
-} from "./selectors";
+import { queueSelector, onlineSelector, requestSelector } from "./selectors";
 
-function buildMiddleware(send) {
+function buildMiddleware(send, serial = true) {
   return ({ dispatch, getState }) => next => action => {
     if (action.meta && action.meta.request) {
       const state = getState();
       const queue = queueSelector(state);
       const online = onlineSelector(state);
-      if (queue.length === 0 && online) {
+      if (!serial || (queue.length === 0 && online)) {
         send(dispatch, action.meta.request);
       }
     }
     const result = next(action);
-    let queue, state, online, busy, attempts, backoffTime;
+    let queue, state, online, request, backoffTime, id;
     // TODO: do you need to respond to both INITIALIZE and ONLINE?
     switch (action.type) {
       case INITIALIZE:
@@ -35,17 +30,24 @@ function buildMiddleware(send) {
         state = getState();
         queue = queueSelector(state);
         online = onlineSelector(state);
-        busy = busySelector(state);
-        if (action.type === ONLINE && busy) break;
-        if (queue.length !== 0 && online) {
-          const data = queue[0];
-          send(dispatch, data);
+        id = action.payload;
+
+        if (!online) break;
+
+        if (serial) {
+          queue = queue.slice(1);
         }
+        (action.type === RETRY
+          ? queue.filter(request => !request.busy || request.id === id)
+          : queue.filter(request => !request.busy)).forEach(request =>
+          send(dispatch, request)
+        );
+
         break;
       case SCHEDULE_RETRY:
         state = getState();
-        attempts = attemptsSelector(state);
-        backoffTime = calculateBackoff(attempts);
+        request = requestSelector(state, action.payload);
+        backoffTime = calculateBackoff(request.attempts);
         setTimeout(() => dispatch(retry()), backoffTime);
         break;
     }

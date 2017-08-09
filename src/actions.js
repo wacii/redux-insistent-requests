@@ -7,16 +7,16 @@ import {
   RETRY
 } from "./constants";
 
-export function dequeue() {
-  return { type: DEQUEUE };
+export function dequeue(id) {
+  return { type: DEQUEUE, payload: id };
 }
 
-export function scheduleRetry() {
-  return { type: SCHEDULE_RETRY };
+export function scheduleRetry(id) {
+  return { type: SCHEDULE_RETRY, payload: id };
 }
 
-export function retry() {
-  return { type: RETRY };
+export function retry(id) {
+  return { type: RETRY, payload: id };
 }
 
 export function online() {

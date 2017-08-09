@@ -5,8 +5,8 @@ import { SUCCESS, CLIENT_ERROR, NETWORK_ERROR } from "../src/request/constants";
 test("dispatch `DEQUEUE` and user provided action on success", () => {
   const { send, dispatch, data, body } = setup(SUCCESS);
   expect.assertions(2);
-  send(dispatch, data).then(() => {
-    expect(dispatch).toBeCalledWith(dequeue());
+  send(dispatch, { data, id: 0 }).then(() => {
+    expect(dispatch).toBeCalledWith(dequeue(0));
     expect(dispatch).toBeCalledWith({ ...data.success, payload: body });
   });
 });
@@ -14,8 +14,8 @@ test("dispatch `DEQUEUE` and user provided action on success", () => {
 test("dispatch `DEQUEUE` and user provided action on client error", () => {
   const { send, dispatch, data, body } = setup(CLIENT_ERROR);
   expect.assertions(2);
-  send(dispatch, data).then(() => {
-    expect(dispatch).toBeCalledWith(dequeue());
+  send(dispatch, { data, id: 0 }).then(() => {
+    expect(dispatch).toBeCalledWith(dequeue(0));
     expect(dispatch).toBeCalledWith({ ...data.failure, payload: body });
   });
 });
@@ -23,14 +23,14 @@ test("dispatch `DEQUEUE` and user provided action on client error", () => {
 test("dispatch `SCHEDULE_RETRY` on network error", () => {
   const { send, dispatch, data } = setup(NETWORK_ERROR);
   expect.hasAssertions();
-  send(dispatch, data).then(() => {
-    expect(dispatch).toBeCalledWith(scheduleRetry());
+  send(dispatch, { data, id: 0 }).then(() => {
+    expect(dispatch).toBeCalledWith(scheduleRetry(0));
   });
 });
 
 test("throw on invalid outcome code", () => {
   const { send, dispatch, data } = setup("NOT_A_VALID_OUTCOME");
-  return expect(send(dispatch, data)).rejects.toBeDefined();
+  return expect(send(dispatch, { data, id: 0 })).rejects.toBeDefined();
 });
 
 function setup(outcome) {

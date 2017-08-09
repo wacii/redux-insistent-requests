@@ -58,8 +58,8 @@ test("send requests only if online", () => {
 
 test("schedule retry when prompted", () => {
   jest.useFakeTimers();
-  let { invoke, dispatch } = setup(buildStateWithRequests());
-  invoke(scheduleRetry());
+  let { invoke, dispatch } = setup(buildStateWithRequests(1));
+  invoke(scheduleRetry(0));
   jest.runAllTimers();
   expect(dispatch).toBeCalledWith(retry());
 });

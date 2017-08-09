@@ -10,19 +10,22 @@ import {
 const initialState = {
   queue: [],
   nextId: 0,
-  online: true,
-  busy: false,
-  attempts: 0
+  online: true
 };
 
 function reducer(state = initialState, action) {
   if (action.meta && action.meta.request) {
-    const item = { ...action.meta.request, id: state.nextId };
+    const request = {
+      data: action.meta.request,
+      id: state.nextId,
+      busy: true,
+      attempts: 1
+    };
+
     return {
       ...state,
       nextId: state.nextId + 1,
-      queue: state.queue.concat(item),
-      busy: true
+      queue: state.queue.concat(request)
     };
   }
 
@@ -30,20 +33,29 @@ function reducer(state = initialState, action) {
     case DEQUEUE:
       return {
         ...state,
-        queue: state.queue.slice(1),
-        busy: false,
-        attempts: 0
+        queue: state.queue.filter(request => request.id !== action.payload)
       };
     case SCHEDULE_RETRY:
       return {
         ...state,
-        busy: true
+        queue: state.queue.map(
+          request =>
+            request.id === action.payload ? { ...request, busy: true } : request
+        )
       };
     case RETRY:
       return {
         ...state,
-        busy: state.online,
-        attempts: state.attempts + 1
+        queue: state.queue.map(
+          request =>
+            request.id === action.payload
+              ? {
+                  ...request,
+                  busy: request.online,
+                  attempts: request.attempts + 1
+                }
+              : request
+        )
       };
     case ONLINE:
       return {
@@ -58,7 +70,11 @@ function reducer(state = initialState, action) {
     case INITIALIZE:
       return {
         ...state,
-        busy: false
+        queue: state.queue.map(request => ({
+          ...request,
+          busy: false,
+          attemps: 1
+        }))
       };
     default:
       return state;

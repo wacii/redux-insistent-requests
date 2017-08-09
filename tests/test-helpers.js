@@ -19,7 +19,7 @@ export function buildOfflineState() {
 export function buildBusyState() {
   let state = reducer(undefined, { type: "" });
   state = reducer(state, actionWithRequest());
-  state = reducer(state, scheduleRetry());
+  state = reducer(state, scheduleRetry(0));
   return { insistentRequests: state };
 }
 
