@@ -75,7 +75,7 @@ function reducer(state = initialState, action) {
         requests: state.requests.map(request => ({
           ...request,
           busy: false,
-          attemps: 1
+          attempts: 1
         }))
       };
     default:
