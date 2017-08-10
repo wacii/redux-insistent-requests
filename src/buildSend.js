@@ -1,4 +1,4 @@
-import { dequeue, scheduleRetry } from "./actions";
+import { complete, scheduleRetry } from "./actions";
 import { SUCCESS, CLIENT_ERROR, NETWORK_ERROR } from "./request/constants";
 
 function buildSend(request) {
@@ -6,13 +6,13 @@ function buildSend(request) {
     return request(data.config).then(([outcome, body]) => {
       switch (outcome) {
         case SUCCESS:
-          dispatch(dequeue(id));
+          dispatch(complete(id));
           if (data.success) {
             dispatch({ ...data.success, payload: body });
           }
           break;
         case CLIENT_ERROR:
-          dispatch(dequeue(id));
+          dispatch(complete(id));
           if (data.failure) {
             dispatch({ ...data.failure, payload: body });
           }

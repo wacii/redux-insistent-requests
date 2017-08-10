@@ -4,8 +4,8 @@ export function nextIdSelector(state) {
   return state[reducerKey].nextId;
 }
 
-export function queueSelector(state) {
-  return state[reducerKey].queue;
+export function requestsSelector(state) {
+  return state[reducerKey].requests;
 }
 
 export function onlineSelector(state) {
@@ -13,5 +13,5 @@ export function onlineSelector(state) {
 }
 
 export function requestSelector(state, id) {
-  return state[reducerKey].queue.find(request => request.id === id);
+  return requestsSelector(state).find(request => request.id === id);
 }

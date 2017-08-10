@@ -1,7 +1,7 @@
 import buildMiddleware from "../src/middleware";
 import * as actions from "../src/actions";
 import { retry, scheduleRetry } from "../src/actions";
-import { queueSelector } from "../src/selectors";
+import { requestsSelector } from "../src/selectors";
 import {
   actionWithRequest,
   buildOfflineState,
@@ -10,7 +10,7 @@ import {
 } from "./test-helpers";
 
 describe("serial", () => {
-  test("send request from metadata when queue empty", () => {
+  test("send request from metadata when no requests", () => {
     let { dispatch, invoke, send } = setup(buildStateWithRequests());
 
     const action = actionWithRequest();
@@ -26,7 +26,7 @@ describe("serial", () => {
     expect(send).not.toBeCalled();
   });
 
-  ["dequeue", "online", "initialize", "retry"].forEach(action => {
+  ["complete", "online", "initialize", "retry"].forEach(action => {
     test(`send next request on ${action}`, () => {
       const { invoke, send } = setup(buildStateWithRequests(2));
       invoke(actions[action]());
@@ -47,7 +47,7 @@ describe("parallel", () => {
     expect(send).toBeCalledWith(dispatch, expected);
   });
 
-  ["dequeue", "online", "initialize", "retry"].forEach(action => {
+  ["complete", "online", "initialize", "retry"].forEach(action => {
     test(`send all requests on ${action}`, () => {
       const { invoke, send } = setup(buildStateWithRequests(2), false);
       invoke(actions[action]());
@@ -62,7 +62,7 @@ test("send request from metadata only if online", () => {
   expect(send).not.toBeCalled();
 });
 
-["dequeue", "online", "initialize", "retry"].forEach(action => {
+["complete", "online", "initialize", "retry"].forEach(action => {
   test(`do not send next request on ${action} if busy`, () => {
     let { invoke, send } = setup(buildBusyState());
     invoke(actions[action]());
@@ -72,8 +72,7 @@ test("send request from metadata only if online", () => {
 
 test("send next request if target of retry action", () => {
   const { invoke, send, getState } = setup(buildStateWithRequests(1));
-  const queue = queueSelector(getState());
-  const request = queue[0];
+  const request = requestsSelector(getState())[0];
   invoke(retry(request.id));
   expect(send).toBeCalled();
 });

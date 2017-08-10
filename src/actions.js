@@ -1,5 +1,5 @@
 import {
-  DEQUEUE,
+  COMPLETE,
   SCHEDULE_RETRY,
   ONLINE,
   OFFLINE,
@@ -7,8 +7,8 @@ import {
   RETRY
 } from "./constants";
 
-export function dequeue(id) {
-  return { type: DEQUEUE, payload: id };
+export function complete(id) {
+  return { type: COMPLETE, payload: id };
 }
 
 export function scheduleRetry(id) {

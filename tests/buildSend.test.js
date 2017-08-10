@@ -1,21 +1,21 @@
 import buildSend from "../src/buildSend";
-import { dequeue, scheduleRetry } from "../src/actions";
+import { complete, scheduleRetry } from "../src/actions";
 import { SUCCESS, CLIENT_ERROR, NETWORK_ERROR } from "../src/request/constants";
 
-test("dispatch `DEQUEUE` and user provided action on success", () => {
+test("dispatch `COMPLETE` and user provided action on success", () => {
   const { send, dispatch, data, body } = setup(SUCCESS);
   expect.assertions(2);
   send(dispatch, { data, id: 0 }).then(() => {
-    expect(dispatch).toBeCalledWith(dequeue(0));
+    expect(dispatch).toBeCalledWith(complete(0));
     expect(dispatch).toBeCalledWith({ ...data.success, payload: body });
   });
 });
 
-test("dispatch `DEQUEUE` and user provided action on client error", () => {
+test("dispatch `COMPLETE` and user provided action on client error", () => {
   const { send, dispatch, data, body } = setup(CLIENT_ERROR);
   expect.assertions(2);
   send(dispatch, { data, id: 0 }).then(() => {
-    expect(dispatch).toBeCalledWith(dequeue(0));
+    expect(dispatch).toBeCalledWith(complete(0));
     expect(dispatch).toBeCalledWith({ ...data.failure, payload: body });
   });
 });

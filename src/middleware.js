@@ -1,7 +1,7 @@
 import { retry } from "./actions";
 import calculateBackoff from "./calculateBackoff";
 import {
-  DEQUEUE,
+  COMPLETE,
   SCHEDULE_RETRY,
   ONLINE,
   INITIALIZE,
@@ -9,7 +9,7 @@ import {
 } from "./constants";
 import {
   nextIdSelector,
-  queueSelector,
+  requestsSelector,
   onlineSelector,
   requestSelector
 } from "./selectors";
@@ -18,34 +18,34 @@ function buildMiddleware(send, serial = true) {
   return ({ dispatch, getState }) => next => action => {
     if (action.meta && action.meta.request) {
       const state = getState();
-      const queue = queueSelector(state);
+      const requests = requestsSelector(state);
       const id = nextIdSelector(state);
       const online = onlineSelector(state);
-      if (!serial || (queue.length === 0 && online)) {
+      if (!serial || (requests.length === 0 && online)) {
         send(dispatch, { data: action.meta.request, id });
       }
     }
     const result = next(action);
-    let queue, state, online, request, backoffTime, id;
+    let requests, state, online, request, backoffTime, id;
     // TODO: do you need to respond to both INITIALIZE and ONLINE?
     switch (action.type) {
       case INITIALIZE:
       case ONLINE:
-      case DEQUEUE:
+      case COMPLETE:
       case RETRY:
         state = getState();
-        queue = queueSelector(state);
+        requests = requestsSelector(state);
         online = onlineSelector(state);
         id = action.payload;
 
         if (!online) break;
 
         if (serial) {
-          queue = queue.slice(0, 1);
+          requests = requests.slice(0, 1);
         }
         (action.type === RETRY
-          ? queue.filter(request => !request.busy || request.id === id)
-          : queue.filter(request => !request.busy)).forEach(request =>
+          ? requests.filter(request => !request.busy || request.id === id)
+          : requests.filter(request => !request.busy)).forEach(request =>
           send(dispatch, request)
         );
 

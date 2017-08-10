@@ -1,5 +1,5 @@
 import {
-  DEQUEUE,
+  COMPLETE,
   ONLINE,
   OFFLINE,
   RETRY,
@@ -8,7 +8,7 @@ import {
 } from "./constants";
 
 const initialState = {
-  queue: [],
+  requests: [],
   nextId: 0,
   online: true
 };
@@ -25,20 +25,22 @@ function reducer(state = initialState, action) {
     return {
       ...state,
       nextId: state.nextId + 1,
-      queue: state.queue.concat(request)
+      requests: state.requests.concat(request)
     };
   }
 
   switch (action.type) {
-    case DEQUEUE:
+    case COMPLETE:
       return {
         ...state,
-        queue: state.queue.filter(request => request.id !== action.payload)
+        requests: state.requests.filter(
+          request => request.id !== action.payload
+        )
       };
     case SCHEDULE_RETRY:
       return {
         ...state,
-        queue: state.queue.map(
+        requests: state.requests.map(
           request =>
             request.id === action.payload ? { ...request, busy: true } : request
         )
@@ -46,7 +48,7 @@ function reducer(state = initialState, action) {
     case RETRY:
       return {
         ...state,
-        queue: state.queue.map(
+        requests: state.requests.map(
           request =>
             request.id === action.payload
               ? {
@@ -70,7 +72,7 @@ function reducer(state = initialState, action) {
     case INITIALIZE:
       return {
         ...state,
-        queue: state.queue.map(request => ({
+        requests: state.requests.map(request => ({
           ...request,
           busy: false,
           attemps: 1
