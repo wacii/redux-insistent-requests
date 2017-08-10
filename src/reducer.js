@@ -13,6 +13,9 @@ const initialState = {
   online: true
 };
 
+// FIXME: you can trigger requests on ONLINE and INITIALIZE
+
+// FIXME: only busy if online, and only if queue...this is super wrong
 function reducer(state = initialState, action) {
   if (action.meta && action.meta.request) {
     const request = {
@@ -53,8 +56,8 @@ function reducer(state = initialState, action) {
             request.id === action.payload
               ? {
                   ...request,
-                  busy: request.online,
-                  attempts: request.attempts + 1
+                  busy: state.online,
+                  attempts: request.attempts + (state.online ? 1 : 0)
                 }
               : request
         )
@@ -75,7 +78,7 @@ function reducer(state = initialState, action) {
         requests: state.requests.map(request => ({
           ...request,
           busy: false,
-          attempts: 1
+          attempts: 0
         }))
       };
     default:
