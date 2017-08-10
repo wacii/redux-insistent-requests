@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint src/",
+    "lint": "eslint src/ test/",
     "format": "prettier --write \"{src,tests}/**/*.js\""
   },
   "repository": "https://github.com/wacii/redux-insistent-requests",
