@@ -27,36 +27,34 @@ function buildMiddleware(send, serial = true) {
     }
 
     const result = next(action);
-    let requests, state, online, request, backoffTime, id;
+    let requests, state, online, request, backoffTime;
 
     if (serial) {
-      switch (action.type) {
-        case COMPLETE:
-        case INITIALIZE:
-        case ONLINE:
-          state = getState();
-          requests = requestsSelector(state);
-          online = onlineSelector(state);
+      if (
+        action.type === COMPLETE ||
+        action.type === INITIALIZE ||
+        action.type === ONLINE
+      ) {
+        state = getState();
+        requests = requestsSelector(state);
+        online = onlineSelector(state);
 
-          if (online && requests.length > 0) {
-            send(dispatch, requests[0]);
-          }
-          break;
+        if (online && requests.length > 0) {
+          send(dispatch, requests[0]);
+        }
       }
-    } else { // parallel
-      switch (action.type) {
-        case INITIALIZE:
-        case ONLINE:
-          state = getState();
-          requests = requestsSelector(state);
-          online = onlineSelector(state);
+    } else {
+      // parallel
+      if (action.type === ONLINE || action.type === INITIALIZE) {
+        state = getState();
+        requests = requestsSelector(state);
+        online = onlineSelector(state);
 
-          if (online) {
-            requests
-              .filter(request => !request.busy)
-              .forEach(request => send(dispatch, request));
-          }
-          break;
+        if (online) {
+          requests
+            .filter(request => !request.busy)
+            .forEach(request => send(dispatch, request));
+        }
       }
     }
     switch (action.type) {
