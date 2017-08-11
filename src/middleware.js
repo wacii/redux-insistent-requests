@@ -74,7 +74,7 @@ function buildMiddleware(send, serial = true) {
         request = requestSelector(state, action.payload);
 
         backoffTime = calculateBackoff(request.attempts);
-        setTimeout(() => dispatch(retry()), backoffTime);
+        setTimeout(() => dispatch(retry(action.payload)), backoffTime);
         break;
     }
     return result;
