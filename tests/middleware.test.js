@@ -26,7 +26,7 @@ describe("serial", () => {
     expect(send).not.toBeCalled();
   });
 
-  ["complete", "online", "initialize", "retry"].forEach(action => {
+  ["complete", "online", "initialize"].forEach(action => {
     test(`send next request on ${action}`, () => {
       const { invoke, send } = setup(buildStateWithRequests(2));
       invoke(actions[action]());
@@ -47,7 +47,7 @@ describe("parallel", () => {
     expect(send).toBeCalledWith(dispatch, expected);
   });
 
-  ["complete", "online", "initialize", "retry"].forEach(action => {
+  ["online", "initialize"].forEach(action => {
     test(`send all requests on ${action}`, () => {
       const { invoke, send } = setup(buildStateWithRequests(2), false);
       invoke(actions[action]());
@@ -62,15 +62,7 @@ test("send request from metadata only if online", () => {
   expect(send).not.toBeCalled();
 });
 
-["complete", "online", "initialize", "retry"].forEach(action => {
-  test(`do not send next request on ${action} if busy`, () => {
-    let { invoke, send } = setup(buildBusyState());
-    invoke(actions[action]());
-    expect(send).not.toBeCalled();
-  });
-});
-
-test("send next request if target of retry action", () => {
+test("send associated request on retry", () => {
   const { invoke, send, getState } = setup(buildStateWithRequests(1));
   const request = requestsSelector(getState())[0];
   invoke(retry(request.id));
