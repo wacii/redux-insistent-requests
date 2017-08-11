@@ -2,10 +2,9 @@ import {
   COMPLETE,
   ONLINE,
   OFFLINE,
-  RETRY,
   SCHEDULE_RETRY,
   INITIALIZE
-} from "./constants";
+} from "../constants";
 
 const initialState = {
   requests: [],
@@ -13,16 +12,13 @@ const initialState = {
   online: true
 };
 
-// FIXME: you can trigger requests on ONLINE and INITIALIZE
-
-// FIXME: only busy if online, and only if queue...this is super wrong
-function reducer(state = initialState, action) {
+function baseReducer(state = initialState, action) {
   if (action.meta && action.meta.request) {
     const request = {
       data: action.meta.request,
       id: state.nextId,
-      busy: true,
-      attempts: 1
+      busy: false,
+      attempts: 0
     };
 
     return {
@@ -46,20 +42,6 @@ function reducer(state = initialState, action) {
         requests: state.requests.map(
           request =>
             request.id === action.payload ? { ...request, busy: true } : request
-        )
-      };
-    case RETRY:
-      return {
-        ...state,
-        requests: state.requests.map(
-          request =>
-            request.id === action.payload
-              ? {
-                  ...request,
-                  busy: state.online,
-                  attempts: request.attempts + (state.online ? 1 : 0)
-                }
-              : request
         )
       };
     case ONLINE:
@@ -86,4 +68,4 @@ function reducer(state = initialState, action) {
   }
 }
 
-export default reducer;
+export default baseReducer;

@@ -1,4 +1,4 @@
-import reducer from "../src/reducer";
+import reducer from "../src/reducer/baseReducer";
 import { offline, scheduleRetry, initialize } from "../src/actions";
 
 export function buildStateWithRequests(count = 0) {
