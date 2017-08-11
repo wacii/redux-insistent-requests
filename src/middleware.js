@@ -28,6 +28,9 @@ function buildMiddleware(send, serial = true) {
     const result = next(action);
     let requests, state, online, request, backoffTime, id;
     // TODO: do you need to respond to both INITIALIZE and ONLINE?
+    // TODO: RETRY and COMPLETE behavior should be different when parallel
+    //   only target the specified request, or not at all for COMPLETE
+    // NOTE: should you separate out the implementations after all?
     switch (action.type) {
       case INITIALIZE:
       case ONLINE:
