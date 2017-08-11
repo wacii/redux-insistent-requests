@@ -21,8 +21,10 @@ function buildMiddleware(send, serial = true) {
       const requests = requestsSelector(state);
       const id = nextIdSelector(state);
       const online = onlineSelector(state);
-      if (online && (!serial || requests.length === 0)) {
-        send(dispatch, { data: action.meta.request, id });
+      const request = { data: action.meta.request, id };
+
+      if (online && ((serial && requests.length === 0) || !serial)) {
+        send(dispatch, request);
       }
     }
 
