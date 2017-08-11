@@ -21,8 +21,7 @@ function buildMiddleware(send, serial = true) {
       const requests = requestsSelector(state);
       const id = nextIdSelector(state);
       const online = onlineSelector(state);
-      // FIXME: you should never send when offline...
-      if (!serial || (requests.length === 0 && online)) {
+      if (online && (!serial || requests.length === 0)) {
         send(dispatch, { data: action.meta.request, id });
       }
     }
