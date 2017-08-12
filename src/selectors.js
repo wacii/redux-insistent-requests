@@ -1,15 +1,15 @@
-const reducerKey = "insistentRequests";
+import { stateKey } from "./constants";
 
 export function nextIdSelector(state) {
-  return state[reducerKey].nextId;
+  return state[stateKey].nextId;
 }
 
 export function requestsSelector(state) {
-  return state[reducerKey].requests;
+  return state[stateKey].requests;
 }
 
 export function onlineSelector(state) {
-  return state[reducerKey].online;
+  return state[stateKey].online;
 }
 
 export function requestSelector(state, id) {

@@ -1,4 +1,5 @@
 const prefix = "@@insistent-requests/";
+export const stateKey = "insistentRequests";
 
 export const COMPLETE = `${prefix}COMPLETE`;
 export const SCHEDULE_RETRY = `${prefix}SCHEDULE_RETRY`;

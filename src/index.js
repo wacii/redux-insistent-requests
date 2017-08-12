@@ -1,5 +1,6 @@
 import buildMiddleware from "./buildMiddleware";
 import buildSend from "./buildSend";
+import { stateKey } from "./constants";
 import { parallelReducer, serialReducer } from "./reducer";
 import { fetch } from "./request";
 
@@ -11,14 +12,13 @@ function insistentRequests(options = {}) {
   const send = buildSend(request);
   const middleware = buildMiddleware(send, serial);
 
-  // TODO: extract state key
   const reducer = serial ? serialReducer : parallelReducer;
   function reducerEnhancer(next) {
     return (state, action) => {
       state = next(state, action);
       return {
         ...state,
-        insistentRequests: reducer(state.insistentRequests, action)
+        [stateKey]: reducer(state[stateKey], action)
       };
     };
   }

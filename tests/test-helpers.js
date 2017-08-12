@@ -1,3 +1,4 @@
+import { stateKey } from "../src/constants";
 import reducer from "../src/reducer/baseReducer";
 import { offline, scheduleRetry, initialize } from "../src/actions";
 
@@ -7,20 +8,20 @@ export function buildStateWithRequests(count = 0) {
     state = reducer(state, actionWithRequest());
   }
   state = reducer(state, initialize());
-  return { insistentRequests: state };
+  return { [stateKey]: state };
 }
 
 export function buildOfflineState() {
   let state = reducer(undefined, { type: "" });
   state = reducer(state, offline());
-  return { insistentRequests: state };
+  return { [stateKey]: state };
 }
 
 export function buildBusyState() {
   let state = reducer(undefined, { type: "" });
   state = reducer(state, actionWithRequest());
   state = reducer(state, scheduleRetry(0));
-  return { insistentRequests: state };
+  return { [stateKey]: state };
 }
 
 let dummyRequestCounter = 0;
