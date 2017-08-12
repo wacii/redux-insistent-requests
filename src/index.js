@@ -1,5 +1,4 @@
-// TODO: rename file "middleware.js"
-import buildMiddleware from "./middleware";
+import buildMiddleware from "./buildMiddleware";
 import buildSend from "./buildSend";
 import { parallelReducer, serialReducer } from "./reducer";
 import { fetch } from "./request";

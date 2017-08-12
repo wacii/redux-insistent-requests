@@ -1,4 +1,4 @@
-import buildMiddleware from "../src/middleware";
+import buildMiddleware from "../src/buildMiddleware";
 import * as actions from "../src/actions";
 import { retry, scheduleRetry } from "../src/actions";
 import { requestsSelector } from "../src/selectors";
@@ -71,10 +71,11 @@ test("send associated request on retry", () => {
 
 test("schedule retry when prompted", () => {
   jest.useFakeTimers();
+  const id = 0;
   let { invoke, dispatch } = setup(buildStateWithRequests(1));
-  invoke(scheduleRetry(0));
+  invoke(scheduleRetry(id));
   jest.runAllTimers();
-  expect(dispatch).toBeCalledWith(retry());
+  expect(dispatch).toBeCalledWith(retry(id));
 });
 
 function setup(state, serial = true) {
