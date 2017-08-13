@@ -1,4 +1,4 @@
-import { INITIALIZE, ONLINE, RETRY } from "../constants";
+import { INITIALIZE, ONLINE } from "../constants";
 
 function createParallelReducer(next) {
   return (state, action) => {
@@ -23,39 +23,22 @@ function createParallelReducer(next) {
       };
     }
 
-    switch (action.type) {
-      case RETRY:
-        return {
-          ...state,
-          requests: state.requests.map(
-            request =>
-              request.id === action.payload
-                ? {
-                    ...request,
-                    busy: true,
-                    attempts: request.attempts + 1
-                  }
-                : request
-          )
-        };
-      case INITIALIZE:
-      case ONLINE:
-        return {
-          ...state,
-          requests: state.requests.map(
-            request =>
-              request.busy
-                ? request
-                : {
-                    ...request,
-                    busy: true,
-                    attempts: request.attempts + 1
-                  }
-          )
-        };
-      default:
-        return state;
+    if (action.type === INITIALIZE || action.type === ONLINE) {
+      return {
+        ...state,
+        requests: state.requests.map(
+          request =>
+            request.busy
+              ? request
+              : {
+                  ...request,
+                  busy: true,
+                  attempts: request.attempts + 1
+                }
+        )
+      };
     }
+    return state;
   };
 }
 

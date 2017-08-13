@@ -39,9 +39,10 @@ function buildMiddleware(send, serial = true) {
       ) {
         state = getState();
         requests = requestsSelector(state);
+        request = requests[0];
         online = onlineSelector(state);
 
-        if (online && requests.length > 0) {
+        if (online && request && !request.busy) {
           send(dispatch, requests[0]);
         }
       }

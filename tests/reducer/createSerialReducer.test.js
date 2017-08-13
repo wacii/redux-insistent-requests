@@ -13,7 +13,7 @@ test("perform request when added to empty queue", () => {
   expect(state.requests).toEqual(expected);
 });
 
-["initialize", "online", "retry"].forEach(action => {
+["initialize", "online"].forEach(action => {
   test(`perform next request in queue on ${action}`, () => {
     const reducer = createReducer(() => ({
       requests: [{ busy: false, attempts: 0 }, { busy: false, attempts: 0 }],

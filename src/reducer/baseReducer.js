@@ -1,9 +1,10 @@
 import {
   COMPLETE,
+  INITIALIZE,
   ONLINE,
   OFFLINE,
-  SCHEDULE_RETRY,
-  INITIALIZE
+  RETRY,
+  SCHEDULE_RETRY
 } from "../constants";
 
 const initialState = {
@@ -11,6 +12,8 @@ const initialState = {
   nextId: 0,
   online: true
 };
+
+// TODO: consider implementing in a similar fashion to buildMiddleware
 
 function baseReducer(state = initialState, action) {
   if (action.meta && action.meta.request) {
@@ -34,6 +37,20 @@ function baseReducer(state = initialState, action) {
         ...state,
         requests: state.requests.filter(
           request => request.id !== action.payload
+        )
+      };
+    case RETRY:
+      return {
+        ...state,
+        requests: state.requests.map(
+          request =>
+            request.id === action.payload
+              ? {
+                  ...request,
+                  busy: state.online,
+                  attempts: request.attempts + (state.online ? 1 : 0)
+                }
+              : request
         )
       };
     case SCHEDULE_RETRY:

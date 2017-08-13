@@ -22,6 +22,24 @@ test("remove request on complete", () => {
   expect(state.requests).toEqual([]);
 });
 
+test("perform specified request on retry", () => {
+  let state = {
+    requests: [
+      { id: 0, busy: false, attempts: 0 },
+      { id: 1, busy: false, attempts: 0 }
+    ],
+    online: true
+  };
+
+  const id = 0;
+  state = reducer(state, retry(id));
+  const expected = [
+    { id: 0, busy: true, attempts: 1 },
+    { id: 1, busy: false, attempts: 0 }
+  ];
+  expect(state.requests).toEqual(expected);
+});
+
 test("change request to busy on schedule retry", () => {
   const id = 0;
   let state = { requests: [{ busy: false, id }] };

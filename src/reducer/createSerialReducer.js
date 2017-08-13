@@ -1,4 +1,4 @@
-import { INITIALIZE, ONLINE, RETRY } from "../constants";
+import { INITIALIZE, ONLINE } from "../constants";
 
 function createSerialReducer(next) {
   return (state, action) => {
@@ -9,8 +9,7 @@ function createSerialReducer(next) {
     if (
       (action.meta && action.meta.request && state.requests.length === 1) ||
       action.type === INITIALIZE ||
-      action.type === ONLINE ||
-      action.type === RETRY
+      action.type === ONLINE
     ) {
       return {
         ...state,
