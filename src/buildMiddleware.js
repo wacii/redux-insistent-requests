@@ -28,35 +28,41 @@ function buildMiddleware(send, serial = true) {
       }
     }
 
-    const result = next(action);
     let requests, state, online, request, backoffTime;
 
     if (serial) {
-      if (
-        action.type === COMPLETE ||
-        action.type === INITIALIZE ||
-        action.type === ONLINE
-      ) {
+      if (action.type === ONLINE) {
         state = getState();
-        requests = requestsSelector(state);
-        request = requests[0];
+        request = requestsSelector(state)[0];
+
+        if (request && !request.busy) {
+          send(dispatch, request);
+        }
+      } else if (action.type === COMPLETE || action.type === INITIALIZE) {
+        state = getState();
+        request = requestsSelector(state)[0];
         online = onlineSelector(state);
 
-        if (online && request && !request.busy) {
-          send(dispatch, requests[0]);
+        if (online && request) {
+          send(dispatch, request);
         }
       }
     } else {
       // parallel
-      if (action.type === ONLINE || action.type === INITIALIZE) {
+      if (action.type === ONLINE) {
+        state = getState();
+        requests = requestsSelector(state);
+
+        requests
+          .filter(request => !request.busy)
+          .forEach(request => send(dispatch, request));
+      } else if (action.type === INITIALIZE) {
         state = getState();
         requests = requestsSelector(state);
         online = onlineSelector(state);
 
         if (online) {
-          requests
-            .filter(request => !request.busy)
-            .forEach(request => send(dispatch, request));
+          requests.forEach(request => send(dispatch, request));
         }
       }
     }
@@ -78,7 +84,7 @@ function buildMiddleware(send, serial = true) {
         setTimeout(() => dispatch(retry(action.payload)), backoffTime);
         break;
     }
-    return result;
+    return next(action);
   };
 }
 
