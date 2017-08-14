@@ -1,5 +1,5 @@
 {
-  "name": "serial-fake",
+  "name": "request-fake",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

@@ -12,15 +12,15 @@ function Request({ id, busy, attempts }) {
 function RequestList({ requests }) {
   return (
     <ul>
-      {requests.map(({ id, busy, attempts }) => (
+      {requests.map(({ id, busy, attempts }) =>
         <Request key={id} id={id} attempts={attempts} busy={busy} />
-      ))}
+      )}
     </ul>
   );
 }
 
 function mapStateToProps({ insistentRequests: { requests } }) {
-  return { requests};
+  return { requests };
 }
 
 export default connect(mapStateToProps)(RequestList);

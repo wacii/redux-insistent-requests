@@ -10,7 +10,7 @@ function requestFake(_config) {
       } else {
         resolve([SUCCESS, ""]);
       }
-    }, 300)
+    }, 300);
   });
 }
 
