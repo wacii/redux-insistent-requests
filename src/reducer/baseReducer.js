@@ -13,8 +13,6 @@ const initialState = {
   online: true
 };
 
-// TODO: consider implementing in a similar fashion to buildMiddleware
-
 function baseReducer(state = initialState, action) {
   if (action.meta && action.meta.request) {
     const request = {

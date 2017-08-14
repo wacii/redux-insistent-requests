@@ -31,39 +31,54 @@ function buildMiddleware(send, serial = true) {
     let requests, state, online, request, backoffTime;
 
     if (serial) {
-      if (action.type === ONLINE) {
-        state = getState();
-        request = requestsSelector(state)[0];
+      switch (action.type) {
+        case ONLINE:
+          state = getState();
+          request = requestsSelector(state)[0];
 
-        if (request && !request.busy) {
-          send(dispatch, request);
-        }
-      } else if (action.type === COMPLETE || action.type === INITIALIZE) {
-        state = getState();
-        request = requestsSelector(state)[0];
-        online = onlineSelector(state);
+          if (request && !request.busy) {
+            send(dispatch, request);
+          }
+          break;
+        case INITIALIZE:
+          state = getState();
+          request = requestsSelector(state)[0];
+          online = onlineSelector(state);
 
-        if (online && request) {
-          send(dispatch, request);
-        }
+          if (online && request) {
+            send(dispatch, request);
+          }
+          break;
+        case COMPLETE:
+          state = getState();
+          request = requestsSelector(state)[1];
+          online = onlineSelector(state);
+
+          if (online && request) {
+            send(dispatch, request);
+          }
+          break;
       }
     } else {
       // parallel
-      if (action.type === ONLINE) {
-        state = getState();
-        requests = requestsSelector(state);
+      switch (action.type) {
+        case ONLINE:
+          state = getState();
+          requests = requestsSelector(state);
 
-        requests
-          .filter(request => !request.busy)
-          .forEach(request => send(dispatch, request));
-      } else if (action.type === INITIALIZE) {
-        state = getState();
-        requests = requestsSelector(state);
-        online = onlineSelector(state);
+          requests
+            .filter(request => !request.busy)
+            .forEach(request => send(dispatch, request));
+          break;
+        case INITIALIZE:
+          state = getState();
+          requests = requestsSelector(state);
+          online = onlineSelector(state);
 
-        if (online) {
-          requests.forEach(request => send(dispatch, request));
-        }
+          if (online) {
+            requests.forEach(request => send(dispatch, request));
+          }
+          break;
       }
     }
     switch (action.type) {
